@@ -84,12 +84,19 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
+      const past = history[move - 1];
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
+      let loc;
+      if (past) {
+        loc = getDifferences(move, step.squares, past.squares)
+      } else {
+        loc = ''
+      }
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button> {loc}
         </li>
       );
     });
@@ -98,7 +105,7 @@ class Game extends React.Component {
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next Player' + (this.state.xIsNext ? 'X' : 'O')
+      status = 'Next Player: ' + (this.state.xIsNext ? 'X' : 'O')
     }
 
     return (
@@ -143,4 +150,16 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+
+function getDifferences(move, current, past) {
+  if (move) {
+    for (let i = 0; i < 9; i++) {
+      if (past[i] == null && current[i] != past[i]) {
+        return current[i] + ' moved to ' + i;
+      }
+    }
+  } else {
+    return '';
+  }
 }
